@@ -61,6 +61,7 @@ error_t pca9685_init(void **pca9685_info_loc, uint8_t pwm_freq)
         pca9685_reg_set(pca9685_info, PCA9685_REG_MODE2, PCA9685_REG_MODE2_OUTDRV) != ERR_OK)
     {
         free(pca9685_info); /* Avoid memory leak. */
+        dbg_prnt_err("Failed to set mode registers.");
         return ERR_I2C_WRITE;
     }
 
@@ -78,6 +79,7 @@ error_t pca9685_reset(void *pca9685_info_ptr)
         perror("ioctl");
         return ERR_I2C_CTRL;
     }
+    /* 0x06 is special and the exact value expected by the chip after receiving a reset address. */
     if (i2c_smbus_write_byte(pca9685_info->fd, 0x06U) != 0)
     {
         dbg_prnt_err("Failed to send SWRST data byte.");
@@ -135,13 +137,17 @@ error_t pca9685_reg_ch_set(void *pca9685_info_ptr, uint8_t const num_ch, uint16_
        means 'always on' so its safe to write the entire 16 bit parameter.
     */
     uint8_t const zero = 0;
-    uint8_t const packet[2] = {(duty_cycle & 0xff00) >> 8, duty_cycle & 0x00ff};
+    /*
+    Keep the 4 MSBs 0 as they are reserved anyways and 4th bit is used for the always-off bit. This
+    leaves 12 bits i.e. a range of 0 to 4095.
+    */
+    uint8_t const packet_duty_cycle[2] = {(duty_cycle & 0x0f00) >> 8, duty_cycle & 0x00ff};
     if (pca9685_reg_set(pca9685_info_ptr, PCA9685_REG_CH(num_ch, PCA9685_REG_CH_ON, PCA9685_REG_CH_LOW), zero) != ERR_OK ||
         pca9685_reg_set(pca9685_info_ptr, PCA9685_REG_CH(num_ch, PCA9685_REG_CH_ON, PCA9685_REG_CH_HIGH), zero) != ERR_OK ||
-        pca9685_reg_set(pca9685_info_ptr, PCA9685_REG_CH(num_ch, PCA9685_REG_CH_OFF, PCA9685_REG_CH_LOW), packet[1]) != ERR_OK ||
-        pca9685_reg_set(pca9685_info_ptr, PCA9685_REG_CH(num_ch, PCA9685_REG_CH_OFF, PCA9685_REG_CH_HIGH), packet[0]) != ERR_OK)
+        pca9685_reg_set(pca9685_info_ptr, PCA9685_REG_CH(num_ch, PCA9685_REG_CH_OFF, PCA9685_REG_CH_LOW), packet_duty_cycle[1]) != ERR_OK ||
+        pca9685_reg_set(pca9685_info_ptr, PCA9685_REG_CH(num_ch, PCA9685_REG_CH_OFF, PCA9685_REG_CH_HIGH), packet_duty_cycle[0]) != ERR_OK)
     {
-        dbg_prnt_err("Failed to set a value of the channel register.");
+        dbg_prnt_err("Failed to write duty cycle to the channel registers.");
         return ERR_I2C_WRITE;
     }
     return ERR_OK;
@@ -150,12 +156,12 @@ error_t pca9685_reg_ch_set(void *pca9685_info_ptr, uint8_t const num_ch, uint16_
 error_t pca9685_reg_print_all(void *pca9685_info_ptr)
 {
     uint8_t mode1, mode2, prescale;
-    uint8_t ch[16][4];
+    uint8_t ch[PCA9685_REG_CH_NUM][4];
     if (pca9685_reg_get(pca9685_info_ptr, PCA9685_REG_MODE1, &mode1) != ERR_OK ||
         pca9685_reg_get(pca9685_info_ptr, PCA9685_REG_MODE2, &mode2) != ERR_OK ||
         pca9685_reg_get(pca9685_info_ptr, PCA9685_REG_PRESCALE, &prescale) != ERR_OK)
     {
-        dbg_prnt_err("Failed to read from either one of the mode registers.");
+        dbg_prnt_err("Failed to read from mode and prescale registers.");
         return ERR_I2C_READ;
     }
 

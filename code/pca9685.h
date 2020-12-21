@@ -1,5 +1,5 @@
-#ifndef _INTERFACE_H_
-#define _INTERFACE_H_
+#ifndef _PCA9685_H_
+#define _PCA9685_H_
 
 #include <stdint.h>
 
@@ -9,8 +9,8 @@
 /* PCA9685 hardware definition */
 #define PCA9685_ADDR_I2C 0x40
 #define PCA9685_ADDR_I2C_RESET 0x0
-#define PCA9685_REG_CH_OFF 1U
 #define PCA9685_REG_CH_ON 0U
+#define PCA9685_REG_CH_OFF 1U
 #define PCA9685_REG_CH_LOW 0U
 #define PCA9685_REG_CH_HIGH 1U
 #define PCA9685_REG_CH_NUM 16U
@@ -31,8 +31,8 @@ start of logical 1 which is the delay. OFF count = counts before start of logica
 which is logical 1 counts - ON count. Whole signal is DELAY->ON->OFF. If logical 1 in the 4th bit of
 HIGH registers, then always ON (if in HIGH ON register) or always OFF (if in HIGH OFF register)
 */
-#define PCA9685_REG_CH(ch_num, on_off, high_low) (((ch_num * 4U) + 0x06U + high_low) + (2U * on_off))
-#define PCA9685_REG_ALL(on_off, high_low) ((0xfaU + high_low) + (2U * on_off))
+#define PCA9685_REG_CH(ch_num, on_off, low_high) (((ch_num * 4U) + 0x06U + low_high) + (2U * on_off))
+#define PCA9685_REG_ALL(on_off, low_high) ((0xfaU + low_high) + (2U * on_off))
 #define PCA9685_REG_PRESCALE 0xfeU
 #define PCA9685_REG_TESTMODE 0xffU
 
@@ -90,7 +90,7 @@ typedef struct
 error_t pca9685_init(void **pca9685_info_loc, uint8_t pwm_freq);
 
 /**!
- * @brief Perform a software reset of the  PCA9685 chip to default settings.
+ * @brief Perform a software reset of the PCA9685 chip to default settings.
  * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @return Status code
  */
@@ -130,4 +130,4 @@ error_t pca9685_reg_ch_set(void *pca9685_info_ptr, uint8_t const num_ch, uint16_
  */
 error_t pca9685_reg_print_all(void *pca9685_info_ptr);
 
-#endif /* _INTERFACE_H_ */
+#endif /* _PCA9685_H_ */
