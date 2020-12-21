@@ -82,7 +82,7 @@ typedef struct
 
 /**!
  * @brief Establishes connection to the PCA9685 chip over I2C and returns a void pointer to an
- * io_info_t struct which contains persistent pca9685 info.
+ * pca9685_info_t struct which contains persistent pca9685 info.
  * @param pca9685_info_ptr Location where to write the pointer to pca9685_info_t created on init.
  * @param pwm_freq The desired PWM frequency in Hz.
  * @return Status code
@@ -91,7 +91,7 @@ error_t pca9685_init(void **pca9685_info_loc, uint8_t pwm_freq);
 
 /**!
  * @brief Perform a software reset of the  PCA9685 chip to default settings.
- * @param pca9685_info_ptr Void pointer to the struct received on io_init.
+ * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @return Status code
  */
 error_t pca9685_reset(void *pca9685_info_ptr);
@@ -107,7 +107,7 @@ error_t pca9685_reg_set(void *pca9685_info_ptr, uint8_t const reg_addr, uint8_t 
 
 /**!
  * @brief Get the value of a register from the PCA9685 chip.
- * @param pca9685_info_ptr Void pointer to the struct received on io_init.
+ * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @param reg_addr Address of the register to read from.
  * @param data Pointer where to write the read register value to. Underfined on error.
  * @return Status code
@@ -116,7 +116,7 @@ error_t pca9685_reg_get(void *pca9685_info_ptr, uint8_t const reg_addr, uint8_t 
 
 /**!
  * @brief A simple interface function to set the duty cycle for a specified channel.
- * @param pca9685_info_ptr Void pointer to the struct received on io_init.
+ * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @param num_ch Number of the channel to modify.
  * @param duty_cycle Duty cycle of the desired signal. 0 : 0%, >=(2^12)-1 : 100%.
  * @return Status code
@@ -125,7 +125,7 @@ error_t pca9685_reg_ch_set(void *pca9685_info_ptr, uint8_t const num_ch, uint16_
 
 /**!
  * @brief Print the contents of all registers on the PCA9685 chip.
- * @param pca9685_info_ptr Void pointer to the struct received on io_init.
+ * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @return Status code
  */
 error_t pca9685_reg_print_all(void *pca9685_info_ptr);
