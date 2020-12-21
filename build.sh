@@ -11,6 +11,7 @@ clang \
     -I /usr/include/linux/i2c-dev.h \
     ../code/pca9685.c \
     ../code/main.c \
+    ../code/io.c \
     -o tco-server-io.bin \
     -O \
     

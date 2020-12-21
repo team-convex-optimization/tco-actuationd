@@ -3,38 +3,48 @@
 
 #include <unistd.h>
 
+int debug = 0;
+int verbose = 0;
+
+#include "debug.h"
+#include "io.h"
 #include "pca9685.h"
 
-const int debug = 1;
-const int verbose = 1;
+#define SERVO_MG995_PULSE_LEN_MIN 100U /* counts */
+#define SERVO_MG995_PULSE_LEN_MAX 420U /* counts */
+#define CH_STEERING 0
+#define CH_MOTOR 1
 
 int main(int argc, const char *argv[])
 {
-    void *pca9685_info;
-    if (pca9685_init(&pca9685_info, 50U) != ERR_OK)
+    void *io_handle = io_init();
+    if (io_handle == NULL)
     {
-        return EXIT_FAILURE;
+        return -1;
     }
-    sleep(1);
-    printf("0 degrees\n");
-    /* 0.4ms pulse length. */
-    if (pca9685_reg_ch_set(pca9685_info, 0U, 82U) != ERR_OK)
+
+    while (1)
     {
-        return EXIT_FAILURE;
-    }
-    sleep(1);
-    printf("90 degrees\n");
-    /* 1.4ms pulse length. */
-    if (pca9685_reg_ch_set(pca9685_info, 0U, 287U) != ERR_OK)
-    {
-        return EXIT_FAILURE;
-    }
-    sleep(1);
-    printf("180 degrees\n");
-    /* 2.4ms pulse length. */
-    if (pca9685_reg_ch_set(pca9685_info, 0U, 492U) != ERR_OK)
-    {
-        return EXIT_FAILURE;
+        for (float turn_frac = 0.0f; turn_frac < 1.0f; turn_frac += 0.01f)
+        {
+            if (io_servo_steer(io_handle, SERVO_MG995_PULSE_LEN_MIN, SERVO_MG995_PULSE_LEN_MAX, CH_STEERING, turn_frac) != 0)
+            {
+                // dbg_prnt_err("Failed to steer servo to %f turn fraction\n", turn_frac);
+                return -1;
+            }
+            usleep(10000);
+        }
+        sleep(1);
+        for (float turn_frac = 1.0f; turn_frac >= 0.0f; turn_frac -= 0.01f)
+        {
+            if (io_servo_steer(io_handle, SERVO_MG995_PULSE_LEN_MIN, SERVO_MG995_PULSE_LEN_MAX, CH_STEERING, turn_frac) != 0)
+            {
+                // dbg_prnt_err("Failed to steer servo to %f turn fraction\n", turn_frac);
+                return -1;
+            }
+            usleep(10000);
+        }
+        sleep(1);
     }
 
     return EXIT_SUCCESS;
