@@ -6,7 +6,7 @@ pushd build
 clang \
     -Wall \
     -std=c11 \
-    -D _BSD_SOURCE \
+    -D _DEFAULT_SOURCE \
     -I ..\
     -I /usr/include/linux/i2c-dev.h \
     ../code/pca9685.c \

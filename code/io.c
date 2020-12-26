@@ -15,7 +15,11 @@ void *io_init(void)
     return io_handle;
 }
 
-int io_servo_steer(void *io_handle, uint16_t const pulse_len_min, uint16_t const pulse_len_max, uint8_t const ch, float const turn_frac)
+int io_servo_steer(void *io_handle,
+                   uint16_t const pulse_len_min,
+                   uint16_t const pulse_len_max,
+                   uint8_t const ch,
+                   float const turn_frac)
 {
     if (turn_frac < 0 || turn_frac > 1)
     {
@@ -32,7 +36,20 @@ int io_servo_steer(void *io_handle, uint16_t const pulse_len_min, uint16_t const
     return 0;
 }
 
-int io_motor_drive(void *io_handle, uint8_t const ch, int16_t const speed)
+int io_motor_init(void *io_handle,
+                  uint16_t const pulse_len_min,
+                  uint16_t const pulse_len_max,
+                  uint8_t const ch,
+                  uint8_t const cal_gpio)
+{
+    return -1;
+}
+
+int io_motor_drive(void *io_handle,
+                   uint16_t const pulse_len_min,
+                   uint16_t const pulse_len_max,
+                   uint8_t const ch,
+                   float const throttle_frac)
 {
     return -1;
 }
