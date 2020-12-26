@@ -1,0 +1,3 @@
+[submodule "lib/tco_shmem"]
+	path = lib/tco_shmem
+	url = https://github.com/team-convex-optimization/tco-shmem.git
