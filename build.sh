@@ -9,6 +9,9 @@ clang \
     -D _DEFAULT_SOURCE \
     -I ..\
     -I /usr/include/linux/i2c-dev.h \
+    -I ../lib/tco_shmem \
+    -lpthread \
+    -lrt \
     ../code/pca9685.c \
     ../code/main.c \
     ../code/io.c \
