@@ -14,11 +14,12 @@ void *io_init(void);
  * @brief Control one of the channels on the PCA9685 board.
  * @param io_handle Pointer received from io_init.
  * @param ch Channel to control.
- * @param control_frac Any float in range [0,1].
+ * @param pulse_frac Any float in range [0,1]. E.g. For a servo: 0 = min angle, 0.5 = center, 1.0 =
+ * max angle.
  * @return 0 on success and -1 on failure.
  */
 int io_ch_control(void *io_handle,
                   uint8_t const ch,
-                  float const control_frac);
+                  float const pulse_frac);
 
 #endif /* _IO_H_ */

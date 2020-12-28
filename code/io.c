@@ -13,7 +13,7 @@
 
 static uint8_t motor_needs_init = 1; /* >0 if needs initialization and =1 if already initialized.*/
 /* XXX: Pulse length min and max are handled internally here and nowhere else! */
-static const uint16_t ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
+static uint16_t const ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
     {100, 420},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
@@ -56,20 +56,20 @@ void *io_init(void)
 
 int io_ch_control(void *io_handle,
                   uint8_t const ch,
-                  float const control_frac)
+                  float const pulse_frac)
 {
     if (ch > PCA9685_REG_CH_NUM)
     {
         dbg_prnt_err("Channel %u does not exist.", ch);
         return -1;
     }
-    if (control_frac < 0 || control_frac > 1)
+    if (pulse_frac < 0 || pulse_frac > 1)
     {
         dbg_prnt_err("Control fraction is not in the range 0 to 1.");
         return -1;
     }
-    uint16_t const duty_cycle = ch_pulse_length[ch][0] + ((ch_pulse_length[ch][1] - ch_pulse_length[ch][0]) * control_frac);
-    dbg_prnt_dbg("Channel %u set to duty cycle %u counts\n", ch, duty_cycle);
+    uint16_t const duty_cycle = ch_pulse_length[ch][0] + ((ch_pulse_length[ch][1] - ch_pulse_length[ch][0]) * pulse_frac);
+    dbg_prnt_dbg("Channel %u set to duty cycle %u, counts\n.", ch, duty_cycle);
     if (ch == MOTOR_CH && motor_needs_init > 0)
     {
         if (motor_init(io_handle, MOTOR_GPIO_CALIB) != 0)
