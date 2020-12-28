@@ -16,6 +16,5 @@ clang \
     ../code/main.c \
     ../code/io.c \
     -o tco-server-io.bin \
-    -O \
-    
+    -O 
 popd
