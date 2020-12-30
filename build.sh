@@ -14,7 +14,7 @@ clang \
     -lrt \
     ../code/pca9685.c \
     ../code/main.c \
-    ../code/io.c \
-    -o tco-server-io.bin \
+    ../code/actuator.c \
+    -o tco-actuationd.bin \
     -O 
 popd

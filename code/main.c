@@ -12,7 +12,7 @@ int debug = 0;
 int verbose = 1;
 
 #include "debug.h"
-#include "io.h"
+#include "actuator.h"
 #include "pca9685.h"
 #include "tco_shmem.h"
 
@@ -46,8 +46,8 @@ int main(int argc, const char *argv[])
     }
     /* === */
 
-    void *io_handle = io_init();
-    if (io_handle == NULL)
+    void *actr_handle = actr_init();
+    if (actr_handle == NULL)
     {
         printf("Failed to initialize IO hardware.\n");
         return EXIT_FAILURE;
@@ -70,7 +70,7 @@ int main(int argc, const char *argv[])
             return EXIT_FAILURE;
         }
 
-        /* Update IO */
+        /* Update actuators */
         if (ctrl_cpy.valid > 0)
         {
             uint8_t ctrl_ch_count = sizeof(ctrl_cpy.ch) / sizeof(ctrl_cpy.ch[0]);
@@ -78,16 +78,16 @@ int main(int argc, const char *argv[])
             {
                 if (ctrl_cpy.ch[ch_i].active > 0)
                 {
-                    io_ch_control(io_handle, ch_i, ctrl_cpy.ch[ch_i].pulse_frac);
+                    actr_ch_control(actr_handle, ch_i, ctrl_cpy.ch[ch_i].pulse_frac);
                 }
                 else
                 {
                     /* TODO: Check if some devices need a signal other than 0.5 as a neutral position. */
-                    io_ch_control(io_handle, ch_i, 0.5f);
+                    actr_ch_control(actr_handle, ch_i, 0.5f);
                 }
             }
         }
-        usleep(100000); /* Update IO state every ~0.1 seconds (a little more than that actually). */
+        usleep(100000); /* Update actuator state every ~0.1 seconds (a little more than that actually). */
     }
 
     return EXIT_SUCCESS;

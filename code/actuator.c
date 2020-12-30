@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "io.h"
+#include "actuator.h"
 #include "pca9685.h"
 #include "debug.h"
 
@@ -34,29 +34,29 @@ static uint16_t const ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
 
 /**!
  * @brief Initialize the motor and calibrate it to the PWM signal from PCA9685.
- * @param io_handle Pointer received from io_init.
+ * @param actr_handle Pointer received from actr_init.
  * @param cal_gpio Number of the GPIO pin to use for controlling calibration.
  * @return 0 on success and -1 on failure.
  */
-static int motor_init(void *io_handle, uint8_t const cal_gpio)
+static int motor_init(void *actr_handle, uint8_t const cal_gpio)
 {
     return 0;
 }
 
-void *io_init(void)
+void *actr_init(void)
 {
-    void *io_handle;
-    if (pca9685_init(&io_handle, PWM_FREQ) != ERR_OK)
+    void *actr_handle;
+    if (pca9685_init(&actr_handle, PWM_FREQ) != ERR_OK)
     {
         dbg_prnt_err("Failed to initialize PCA9685.");
         return NULL;
     }
-    return io_handle;
+    return actr_handle;
 }
 
-int io_ch_control(void *io_handle,
-                  uint8_t const ch,
-                  float const pulse_frac)
+int actr_ch_control(void *actr_handle,
+                    uint8_t const ch,
+                    float const pulse_frac)
 {
     if (ch > PCA9685_REG_CH_NUM)
     {
@@ -72,7 +72,7 @@ int io_ch_control(void *io_handle,
     dbg_prnt_dbg("Channel %u set to duty cycle %u, counts\n.", ch, duty_cycle);
     if (ch == MOTOR_CH && motor_needs_init > 0)
     {
-        if (motor_init(io_handle, MOTOR_GPIO_CALIB) != 0)
+        if (motor_init(actr_handle, MOTOR_GPIO_CALIB) != 0)
         {
             dbg_prnt_err("Failed to initialize the motor.");
             return -1;
@@ -83,7 +83,7 @@ int io_ch_control(void *io_handle,
             motor_needs_init = 0;
         }
     }
-    if (pca9685_reg_ch_set(io_handle, ch, duty_cycle) != ERR_OK)
+    if (pca9685_reg_ch_set(actr_handle, ch, duty_cycle) != ERR_OK)
     {
         dbg_prnt_err("Failed to set the new duty cycle for channel %u.", ch);
         return -1;
