@@ -2,7 +2,7 @@
 
 #include "actuator.h"
 #include "pca9685.h"
-#include "debug.h"
+#include "tco_libd.h"
 
 #define PWM_FREQ 50        /* Hz */
 #define MOTOR_CH 0         /* Motor must always be plugged into this channel. */
@@ -48,7 +48,7 @@ void *actr_init(void)
     void *actr_handle;
     if (pca9685_init(&actr_handle, PWM_FREQ) != ERR_OK)
     {
-        dbg_prnt_err("Failed to initialize PCA9685.");
+        log_error("Failed to initialize PCA9685");
         return NULL;
     }
     return actr_handle;
@@ -60,32 +60,32 @@ int actr_ch_control(void *actr_handle,
 {
     if (ch > PCA9685_REG_CH_NUM)
     {
-        dbg_prnt_err("Channel %u does not exist.", ch);
+        log_error("Channel %u does not exist", ch);
         return -1;
     }
     if (pulse_frac < 0 || pulse_frac > 1)
     {
-        dbg_prnt_err("Control fraction is not in the range 0 to 1.");
+        log_error("Control fraction is not in the range 0 to 1");
         return -1;
     }
     uint16_t const duty_cycle = ch_pulse_length[ch][0] + ((ch_pulse_length[ch][1] - ch_pulse_length[ch][0]) * pulse_frac);
-    dbg_prnt_dbg("Channel %u set to duty cycle %u, counts\n.", ch, duty_cycle);
+    log_debug("Channel %u set to duty cycle %u", ch, duty_cycle);
     if (ch == MOTOR_CH && motor_needs_init > 0)
     {
         if (motor_init(actr_handle, MOTOR_GPIO_CALIB) != 0)
         {
-            dbg_prnt_err("Failed to initialize the motor.");
+            log_error("Failed to initialize the motor");
             return -1;
         }
         else
         {
-            dbg_prnt_inf("Motor was initialized.");
+            log_info("Motor was initialized");
             motor_needs_init = 0;
         }
     }
     if (pca9685_reg_ch_set(actr_handle, ch, duty_cycle) != ERR_OK)
     {
-        dbg_prnt_err("Failed to set the new duty cycle for channel %u.", ch);
+        log_error("Failed to set the new duty cycle for channel %u", ch);
         return -1;
     }
     return 0;

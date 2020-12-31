@@ -8,48 +8,33 @@
 #include <fcntl.h>
 #include <semaphore.h>
 
-int debug = 0;
-int verbose = 1;
-
-#include "debug.h"
 #include "actuator.h"
 #include "pca9685.h"
 #include "tco_shmem.h"
+#include "tco_libd.h"
+
+int log_level = LOG_INFO | LOG_DEBUG | LOG_ERROR;
 
 int main(int argc, const char *argv[])
 {
-    /* Map shared memory object for control data into memory and open its associated semaphore. */
-    int shmem_fd = shm_open(TCO_SHMEM_NAME_CONTROL, O_RDONLY, 0666);
-    if (shmem_fd == -1)
+    if (log_init("actuatord", "./log.txt") != 0)
     {
-        perror("shm_open");
-        printf("Failed to open the shared memory object.\n");
+        printf("Failed to initialize the logger\n");
         return EXIT_FAILURE;
     }
-    struct tco_shmem_data_control *control_data = (struct tco_shmem_data_control *)mmap(0, TCO_SHMEM_SIZE_CONTROL, PROT_READ, MAP_SHARED, shmem_fd, 0);
-    if (control_data == MAP_FAILED)
+
+    struct tco_shmem_data_control *control_data;
+    sem_t *control_data_sem;
+    if (shmem_map(TCO_SHMEM_NAME_CONTROL, TCO_SHMEM_SIZE_CONTROL, TCO_SHMEM_NAME_SEM_CONTROL, O_RDONLY, (void **)&control_data, &control_data_sem) != 0)
     {
-        perror("mmap");
-        printf("Failed to map the shared memory object into memory.\n");
+        log_error("Failed to map shared memory and associated semaphore");
         return EXIT_FAILURE;
     }
-    if (close(shmem_fd) == -1) /* No longer needed. */
-    {
-        perror("close"); /* Not a critical error. */
-    }
-    sem_t *control_data_sem = sem_open(TCO_SHMEM_NAME_SEM_CONTROL, 0);
-    if (control_data_sem == SEM_FAILED)
-    {
-        perror("sem_open");
-        printf("Failed to open the semaphore associated with the shared memory object '%s'.\n", TCO_SHMEM_NAME_CONTROL);
-        return EXIT_FAILURE;
-    }
-    /* === */
 
     void *actr_handle = actr_init();
     if (actr_handle == NULL)
     {
-        printf("Failed to initialize IO hardware.\n");
+        log_error("Failed to initialize IO hardware");
         return EXIT_FAILURE;
     }
 
@@ -58,7 +43,7 @@ int main(int argc, const char *argv[])
     {
         if (sem_wait(control_data_sem) == -1)
         {
-            perror("sem_wait");
+            log_error("sem_wait: %s", strerror(errno));
             return EXIT_FAILURE;
         }
         /* START: Critical section */
@@ -66,7 +51,7 @@ int main(int argc, const char *argv[])
         /* END: Critical section */
         if (sem_post(control_data_sem) == -1)
         {
-            perror("sem_post");
+            log_error("sem_post: %s", strerror(errno));
             return EXIT_FAILURE;
         }
 
