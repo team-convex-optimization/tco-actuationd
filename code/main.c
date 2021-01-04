@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <semaphore.h>
+#include <errno.h>
 
 #include "actuator.h"
 #include "pca9685.h"
@@ -17,7 +18,7 @@ int log_level = LOG_INFO | LOG_DEBUG | LOG_ERROR;
 
 int main(int argc, const char *argv[])
 {
-    if (log_init("actuatord", "./log.txt") != 0)
+    if (log_init("actuationd", "./log.txt") != 0)
     {
         printf("Failed to initialize the logger\n");
         return EXIT_FAILURE;
