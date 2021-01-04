@@ -13,6 +13,7 @@ clang \
     -std=c11 \
     -D _DEFAULT_SOURCE \
     -I ..\
+    -l i2c \
     -I /usr/include/linux/i2c-dev.h \
     -I ../lib/tco_shmem \
     -I ../lib/tco_libd/include \

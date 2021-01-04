@@ -8,7 +8,7 @@
 
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
-
+#include <i2c/smbus.h>
 #include "tco_libd.h"
 #include "pca9685.h"
 
