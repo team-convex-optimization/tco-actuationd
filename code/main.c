@@ -20,6 +20,12 @@ int log_level = LOG_INFO | LOG_DEBUG | LOG_ERROR;
 
 int main(int argc, const char *argv[])
 {
+    if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))
+    {
+        cal_usage();
+        return EXIT_SUCCESS;
+    }
+
     if (log_init("actuationd", "./log.txt") != 0)
     {
         printf("Failed to initialize the logger\n");
@@ -44,7 +50,7 @@ int main(int argc, const char *argv[])
     if (argc == 2 && (strcmp(argv[1], "--calibrate") == 0 || strcmp(argv[1], "-c") == 0))
     {
         cal_main(actr_handle);
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     struct tco_shmem_data_control ctrl_cpy = {0};

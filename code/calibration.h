@@ -8,4 +8,9 @@
  */
 void cal_main(void *pca9685_handle);
 
+/**
+ * @brief Print out a usage message for the calibration mode.
+ */
+void cal_usage(void);
+
 #endif /* _CAL_H_ */

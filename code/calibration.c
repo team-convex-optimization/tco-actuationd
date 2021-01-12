@@ -247,3 +247,16 @@ void cal_main(void *pca9685_handle)
     endwin();
     exit(EXIT_SUCCESS);
 }
+
+void cal_usage(void)
+{
+    printf("Calibration mode:\n"
+           "'e': To enter/leave edit mode.\n"
+           "',': In edit mode this decreases the increment step (-1) for changing values.\n"
+           "'.': In edit mode this increases the increment step (+1) for changing values.\n"
+           "'q': Quit the calibration app.\n"
+           "'Up' and 'Right' arrow keys increment the selected value in edit mode.\n"
+           "'Down' and 'Left' arrow keys decrement the selected value in edit mode.\n"
+           "'Left' and 'Right' arrow keys can be used to select the channel in visual mode.\n"
+           "'Space' bar in edit mode will zero-out the edited value when its current value is >0 and otherwise will set it to max i.e. 4096.\n");
+}
