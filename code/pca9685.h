@@ -80,7 +80,7 @@ typedef struct
     uint8_t reg_prescale;
 } pca9685_info_t;
 
-/**!
+/**
  * @brief Establishes connection to the PCA9685 chip over I2C and returns a void pointer to an
  * pca9685_info_t struct which contains persistent pca9685 info.
  * @param pca9685_info_ptr Location where to write the pointer to pca9685_info_t created on init.
@@ -89,14 +89,14 @@ typedef struct
  */
 error_t pca9685_init(void **pca9685_info_loc, uint8_t pwm_freq);
 
-/**!
+/**
  * @brief Perform a software reset of the PCA9685 chip to default settings.
  * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @return Status code
  */
 error_t pca9685_reset(void *pca9685_info_ptr);
 
-/**!
+/**
  * @brief Set the value of a register on the PCA9685 chip.
  * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @param reg_addr Address of the register to write to.
@@ -105,7 +105,7 @@ error_t pca9685_reset(void *pca9685_info_ptr);
  */
 error_t pca9685_reg_set(void *pca9685_info_ptr, uint8_t const reg_addr, uint8_t const data);
 
-/**!
+/**
  * @brief Get the value of a register from the PCA9685 chip.
  * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @param reg_addr Address of the register to read from.
@@ -114,7 +114,7 @@ error_t pca9685_reg_set(void *pca9685_info_ptr, uint8_t const reg_addr, uint8_t 
  */
 error_t pca9685_reg_get(void *pca9685_info_ptr, uint8_t const reg_addr, uint8_t *data);
 
-/**!
+/**
  * @brief A simple interface function to set the duty cycle for a specified channel.
  * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @param num_ch Number of the channel to modify.
@@ -123,7 +123,7 @@ error_t pca9685_reg_get(void *pca9685_info_ptr, uint8_t const reg_addr, uint8_t 
  */
 error_t pca9685_reg_ch_set(void *pca9685_info_ptr, uint8_t const num_ch, uint16_t const duty_cycle);
 
-/**!
+/**
  * @brief Print the contents of all registers on the PCA9685 chip.
  * @param pca9685_info_ptr Void pointer to the struct received on pca9685_init.
  * @return Status code

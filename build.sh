@@ -19,9 +19,11 @@ clang \
     -I ../lib/tco_libd/include \
     -lpthread \
     -lrt \
+    -lncurses \
     ../code/pca9685.c \
     ../code/main.c \
     ../code/actuator.c \
+    ../code/calibration.c \
     tco_libd.a \
     -o tco-actuationd.bin \
     -O 

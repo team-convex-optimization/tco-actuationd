@@ -11,6 +11,8 @@
 
 #include "actuator.h"
 #include "pca9685.h"
+#include "calibration.h"
+
 #include "tco_shmem.h"
 #include "tco_libd.h"
 
@@ -37,6 +39,12 @@ int main(int argc, const char *argv[])
     {
         log_error("Failed to initialize IO hardware");
         return EXIT_FAILURE;
+    }
+
+    if (argc == 2 && (strcmp(argv[1], "--calibrate") == 0 || strcmp(argv[1], "-c") == 0))
+    {
+        cal_main(actr_handle);
+        return 0;
     }
 
     struct tco_shmem_data_control ctrl_cpy = {0};
@@ -73,7 +81,7 @@ int main(int argc, const char *argv[])
                 }
             }
         }
-        usleep(100000); /* Update actuator state every ~0.1 seconds (a little more than that actually). */
+        usleep(10000); /* Update actuator state every ~0.01 seconds (a little more than that actually). */
     }
 
     return EXIT_SUCCESS;
