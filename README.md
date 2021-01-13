@@ -5,3 +5,4 @@
 - LLVM
 - libi2c-dev
 - libncurses5-dev
+- libgpiod-dev 

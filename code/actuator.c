@@ -1,17 +1,21 @@
 #include <stdlib.h>
+#include <unistd.h>
+
+#include "tco_libd.h"
 
 #include "actuator.h"
 #include "pca9685.h"
-#include "tco_libd.h"
+#include "gpio.h"
 
-#define PWM_FREQ 50        /* Hz */
-#define MOTOR_CH 0         /* Motor must always be plugged into this channel. */
-#define MOTOR_GPIO_CALIB 0 /* GPIO pin to use for motor calibration. */
+#define PWM_FREQ 50         /* Hz */
+#define MOTOR_CH 14         /* Motor must always be plugged into this channel. */
+#define MOTOR_GPIO_CALIB 24 /* GPIO pin to use for motor calibration. */
 
 #define PULSE_LEN_MIN_DEFUALT 100
 #define PULSE_LEN_MAX_DEFUALT 200
 
-static uint8_t motor_needs_init = 1; /* >0 if needs initialization and =1 if already initialized.*/
+static uint8_t motor_init_done = 0; /* 0 if needs initialization and >0 if initialized.*/
+
 /* XXX: Pulse length min and max are handled internally here and nowhere else! */
 static uint16_t const ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
@@ -40,6 +44,35 @@ static uint16_t const ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
  */
 static int motor_init(void *actr_handle, uint8_t const cal_gpio)
 {
+    struct gpiod_line *line = gpio_line_init(OUT, MOTOR_GPIO_CALIB);
+    gpio_line_write(line, 1);
+    sleep(3);
+    gpio_line_write(line, 0);
+
+    /* Set throttle to neutral position, then press button. Wait 1 second. */
+    actr_ch_control(actr_handle, MOTOR_CH, 0.5);
+    gpio_line_write(line, 1);
+    usleep(500000);
+    gpio_line_write(line, 0);
+    sleep(1);
+
+    /* Set throttle to max, press button. Wait 1 second. */
+    actr_ch_control(actr_handle, MOTOR_CH, 1);
+    gpio_line_write(line, 1);
+    usleep(500000);
+    gpio_line_write(line, 0);
+    sleep(1);
+
+    /* Set throttle to min, press button. Wait 1 second. */
+    actr_ch_control(actr_handle, MOTOR_CH, 0);
+    gpio_line_write(line, 1);
+    usleep(500000);
+    gpio_line_write(line, 0);
+    sleep(1);
+
+    /* Handshake and calibration is now complete! */
+    log_info("Motor has been calibrated\n");
+    motor_init_done = 1;
     return 0;
 }
 
@@ -50,6 +83,15 @@ void *actr_init(void)
     {
         log_error("Failed to initialize PCA9685");
         return NULL;
+    }
+    if (motor_init(actr_handle, MOTOR_GPIO_CALIB) != 0)
+    {
+        log_error("Failed to initialize the motor");
+    }
+    else
+    {
+        log_info("Motor was initialized");
+        /* If trully initialized, 'motor_init_done' will be set accordingly. */
     }
     return actr_handle;
 }
@@ -68,20 +110,14 @@ int actr_ch_control(void *actr_handle,
         log_error("Control fraction is not in the range 0 to 1");
         return -1;
     }
+
     uint16_t const duty_cycle = ch_pulse_length[ch][0] + ((ch_pulse_length[ch][1] - ch_pulse_length[ch][0]) * pulse_frac);
     log_debug("Channel %u set to duty cycle %u", ch, duty_cycle);
-    if (ch == MOTOR_CH && motor_needs_init > 0)
+
+    if (ch == MOTOR_CH && motor_init_done == 0)
     {
-        if (motor_init(actr_handle, MOTOR_GPIO_CALIB) != 0)
-        {
-            log_error("Failed to initialize the motor");
-            return -1;
-        }
-        else
-        {
-            log_info("Motor was initialized");
-            motor_needs_init = 0;
-        }
+        /* Not critical, can still set the duty cycle but likely without any effect. */
+        log_error("Motor needs to be initialized to control it");
     }
     if (pca9685_reg_ch_set(actr_handle, ch, duty_cycle) != ERR_OK)
     {
