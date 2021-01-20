@@ -29,12 +29,14 @@ struct gpiod_line *gpio_line_init(enum gpio_dir dir, int pin)
             log_error("Request GPIO line as input failed");
             goto clean_up;
         }
+        break;
     case OUT:
         if (gpiod_line_request_output(line, "Consumer", 0) < 0)
         {
             log_error("Request GPIO line as output failed");
             goto clean_up;
         }
+        break;
     default:
         log_error("Unknown gpio_dir, got : %d", dir);
         goto clean_up;
