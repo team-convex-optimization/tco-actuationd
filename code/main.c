@@ -35,6 +35,14 @@ int main(int argc, const char *argv[])
         return EXIT_FAILURE;
     }
 
+    if ((strcmp(argv[1], "--ultra") == 0 || strcmp(argv[1], "-u") == 0))
+    {
+        if (argc != 5)
+            printf("Incorrect usage. Use '-h' for more info.\n");
+        us_test(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
+        return EXIT_SUCCESS;
+    }
+
     struct tco_shmem_data_control *control_data;
     sem_t *control_data_sem;
     if (shmem_map(TCO_SHMEM_NAME_CONTROL, TCO_SHMEM_SIZE_CONTROL, TCO_SHMEM_NAME_SEM_CONTROL, O_RDONLY, (void **)&control_data, &control_data_sem) != 0)
@@ -53,14 +61,6 @@ int main(int argc, const char *argv[])
     if (argc == 2 && (strcmp(argv[1], "--calibrate") == 0 || strcmp(argv[1], "-c") == 0))
     {
         cal_main(actr_handle);
-        return EXIT_SUCCESS;
-    }
-
-    if ((strcmp(argv[1], "--ultra") == 0 || strcmp(argv[1], "-u") == 0))
-    {
-        if (argc != 5)
-            printf("Incorrect usage. Use '-h' for more info.\n");
-        us_test(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
         return EXIT_SUCCESS;
     }
 

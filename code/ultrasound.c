@@ -4,9 +4,9 @@ ultrasound_sensor *us_init(int gpio_trig, int gpio_echo)
 {
     ultrasound_sensor *us = (ultrasound_sensor *)malloc(sizeof(ultrasound_sensor));
 
-    struct gpiod_line *trig = gpio_line_init(OUT, gpio_trig);
-    struct gpiod_line *echo = gpio_line_init(IN, gpio_echo);
-    if (trig == NULL || echo == NULL)
+    us->trig = gpio_line_init(OUT, gpio_trig);
+    us->echo = gpio_line_init(IN, gpio_echo);
+    if (us->trig == NULL || us->echo == NULL)
     {
         log_error("Could not initialize ultrasonic sensor");
         return NULL;
@@ -17,7 +17,7 @@ ultrasound_sensor *us_init(int gpio_trig, int gpio_echo)
 
 double get_distance(ultrasound_sensor *us)
 {
-    time_t start, end;
+    struct timespec start_spec, end_spec;
 
     //Send pulse
     gpio_line_write(us->trig, 1); //TDO Make macro for HIGH and LOW 
@@ -26,12 +26,13 @@ double get_distance(ultrasound_sensor *us)
 
     //Recieve pulse
     while(gpio_line_read(us->echo) == 0) {}
-    start = time(NULL);
+    clock_gettime(_POSIX_MONOTONIC_CLOCK, &start_spec);
     while(gpio_line_read(us->echo) == 1) {}
-    end = time(NULL);
+    clock_gettime(_POSIX_MONOTONIC_CLOCK, &end_spec);
+
 
     //Calculate the length of the pulse in seconds
-    float rtt = ((end - start) / TIME_T_TO_SECONDS);
+    long double rtt = ((end_spec.tv_nsec - start_spec.tv_nsec)/NANO_SEC_TO_SEC);
     double distance = rtt * 17150; //(1/2)speed of sound in cm/s.
     return distance;
 }
@@ -51,7 +52,7 @@ void us_test(int gpio_trig, int gpio_echo, int num_pings)
     printf("Testing ping\n");
     for (int i = 0; i < num_pings; i++) {
         double dist = get_distance(us);
-        printf("\rPing %d has distance of %f cm(s)", i, dist);
+        printf("Ping %d has distance of %f cm(s)\n", i, dist);
     }
     printf("\nTest complete. cleaning...\n");
     us_cleanup(us);

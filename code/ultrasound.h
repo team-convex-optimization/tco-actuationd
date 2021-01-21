@@ -1,7 +1,7 @@
 #ifndef _ULTRASOUND_H_
 #define _ULTRASOUND_H_
 
-#include <time.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <assert.h>
@@ -10,7 +10,7 @@
 
 #include "gpio.h"
 
-#define TIME_T_TO_SECONDS 12960000
+#define NANO_SEC_TO_SEC 1000000000
 
 typedef struct {
     struct gpiod_line *trig;
