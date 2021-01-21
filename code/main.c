@@ -37,8 +37,11 @@ int main(int argc, const char *argv[])
 
     if ((strcmp(argv[1], "--ultra") == 0 || strcmp(argv[1], "-u") == 0))
     {
-        if (argc != 5)
+        if (argc != 5) 
+        {
             printf("Incorrect usage. Use '-h' for more info.\n");
+            return EXIT_FAILURE;
+        }
         us_test(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
         return EXIT_SUCCESS;
     }
