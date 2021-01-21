@@ -26,6 +26,7 @@ clang \
     ../code/actuator.c \
     ../code/calibration.c \
     ../code/gpio.c \
+    ../code/ultrasound.c \
     tco_libd.a \
     -o tco-actuationd.bin \
     -O 
