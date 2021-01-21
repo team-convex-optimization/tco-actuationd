@@ -116,7 +116,7 @@ int actr_ch_control(void *actr_handle,
 
     if (ch == MOTOR_CH && motor_init_done == 0)
     {
-        /* Not critical, can still set the duty cycle but likely with out any effect. */
+        /* Not critical, can still set the duty cycle but likely without any effect. */
         log_error("Motor needs to be initialized to control it");
     }
     if (pca9685_reg_ch_set(actr_handle, ch, duty_cycle) != ERR_OK)
