@@ -30,7 +30,6 @@ double get_distance(ultrasound_sensor *us)
     while(gpio_line_read(us->echo) == 1) {}
     clock_gettime(_POSIX_MONOTONIC_CLOCK, &end_spec);
 
-
     //Calculate the length of the pulse in seconds
     long double rtt = ((end_spec.tv_nsec - start_spec.tv_nsec)/NANO_SEC_TO_SEC);
     double distance = rtt * 17150; //(1/2)speed of sound in cm/s.
@@ -48,11 +47,15 @@ void us_cleanup(ultrasound_sensor *us)
 void us_test(int gpio_trig, int gpio_echo, int num_pings)
 {
     ultrasound_sensor *us = us_init(gpio_trig, gpio_echo);
-    assert(us != NULL);
-    printf("Testing ping\n");
+    if (us == NULL)
+    {
+	log_error("us_test failed as ultrasound sensor initialization failed");
+	return;
+    }
     for (int i = 0; i < num_pings; i++) {
         double dist = get_distance(us);
         printf("Ping %d has distance of %f cm(s)\n", i, dist);
+	usleep(500000);
     }
     printf("\nTest complete. cleaning...\n");
     us_cleanup(us);

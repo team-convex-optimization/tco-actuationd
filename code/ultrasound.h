@@ -10,7 +10,7 @@
 
 #include "gpio.h"
 
-#define NANO_SEC_TO_SEC 1000000000
+#define NANO_SEC_TO_SEC 1000000000.0
 
 typedef struct {
     struct gpiod_line *trig;
