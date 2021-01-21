@@ -32,7 +32,7 @@ double get_distance(ultrasound_sensor *us)
 
     //Calculate the length of the pulse in seconds
     float rtt = ((end - start) / TIME_T_TO_SECONDS);
-    double distance = rtt * 17000; //TODO Why 17k?
+    double distance = rtt * 17150; //(1/2)speed of sound in cm/s.
     return distance;
 }
 
@@ -51,7 +51,7 @@ void us_test(int gpio_trig, int gpio_echo, int num_pings)
     printf("Testing ping\n");
     for (int i = 0; i < num_pings; i++) {
         double dist = get_distance(us);
-        printf("\rPing %d has distance of %f", i, dist);
+        printf("\rPing %d has distance of %f cm(s)", i, dist);
     }
     printf("\nTest complete. cleaning...\n");
     us_cleanup(us);
