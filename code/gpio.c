@@ -23,14 +23,14 @@ struct gpiod_line *gpio_line_init(enum gpio_dir dir, int pin)
 
     switch (dir)
     {
-    case IN:
+    case GPIO_IN:
         if (gpiod_line_request_input(line, "gpio_state") < 0)
         {
             log_error("Request GPIO line as input failed");
             goto clean_up;
         }
         break;
-    case OUT:
+    case GPIO_OUT:
         if (gpiod_line_request_output(line, "Consumer", 0) < 0)
         {
             log_error("Request GPIO line as output failed");
@@ -56,7 +56,7 @@ clean_up:
     return NULL;
 }
 
-int gpio_line_write(struct gpiod_line *line, unsigned int value)
+int gpio_line_write(struct gpiod_line *line, enum gpio_value value)
 {
     int ret = gpiod_line_set_value(line, value);
     if (ret < 0)

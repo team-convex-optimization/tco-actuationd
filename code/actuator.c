@@ -44,30 +44,30 @@ static uint16_t const ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
  */
 static int motor_init(void *actr_handle, uint8_t const cal_gpio)
 {
-    struct gpiod_line *line = gpio_line_init(OUT, MOTOR_GPIO_CALIB);
-    gpio_line_write(line, 1);
+    struct gpiod_line *line = gpio_line_init(GPIO_OUT, MOTOR_GPIO_CALIB);
+    gpio_line_write(line, GPIO_HIGH);
     sleep(3);
-    gpio_line_write(line, 0);
+    gpio_line_write(line, GPIO_LOW);
 
     /* Set throttle to neutral position, then press button. Wait 1 second. */
     actr_ch_control(actr_handle, MOTOR_CH, 0.5);
-    gpio_line_write(line, 1);
+    gpio_line_write(line, GPIO_HIGH);
     usleep(500000);
-    gpio_line_write(line, 0);
+    gpio_line_write(line, GPIO_LOW);
     sleep(1);
 
     /* Set throttle to max, press button. Wait 1 second. */
     actr_ch_control(actr_handle, MOTOR_CH, 1);
-    gpio_line_write(line, 1);
+    gpio_line_write(line, GPIO_HIGH);
     usleep(500000);
-    gpio_line_write(line, 0);
+    gpio_line_write(line, GPIO_LOW);
     sleep(1);
 
     /* Set throttle to min, press button. Wait 1 second. */
     actr_ch_control(actr_handle, MOTOR_CH, 0);
-    gpio_line_write(line, 1);
+    gpio_line_write(line, GPIO_HIGH);
     usleep(500000);
-    gpio_line_write(line, 0);
+    gpio_line_write(line, GPIO_LOW);
     sleep(1);
 
     /* Handshake and calibration is now complete! */
