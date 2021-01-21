@@ -56,7 +56,7 @@ clean_up:
     return NULL;
 }
 
-int gpio_line_write(struct gpiod_line *line, unsigned int value)
+int gpio_line_write(struct gpiod_line *line, enum gpio_value value)
 {
     int ret = gpiod_line_set_value(line, value);
     if (ret < 0)

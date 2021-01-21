@@ -11,6 +11,12 @@ enum gpio_dir
     OUT,
 };
 
+enum gpio_value
+{
+    LOW = 0,
+    HIGH,
+};
+
 /**
  * @brief Initaites communication and ensures access to the GPIO kernel interface from userspace.
  * @param dir Direction of GPIO comm.

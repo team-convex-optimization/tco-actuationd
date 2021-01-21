@@ -11,6 +11,7 @@
 #include "gpio.h"
 
 #define NANO_SEC_TO_SEC 1000000000.0
+#define SPEED_OF_SOUND_CMs_HALF 17150 //(1/2)speed of sound in cm/s.
 
 typedef struct {
     struct gpiod_line *trig;
