@@ -1,42 +1,42 @@
 #include "ultrasound.h"
 
-ultrasound_sensor *us_init(int gpio_trig, int gpio_echo)
+void *us_init(int gpio_trig, int gpio_echo)
 {
-    ultrasound_sensor *us = (ultrasound_sensor *)malloc(sizeof(ultrasound_sensor));
+    sensor_ultrasound *us = (sensor_ultrasound *)malloc(sizeof(sensor_ultrasound));
 
-    us->trig = gpio_line_init(OUT, gpio_trig);
-    us->echo = gpio_line_init(IN, gpio_echo);
+    us->trig = gpio_line_init(GPIO_OUT, gpio_trig);
+    us->echo = gpio_line_init(GPIO_IN, gpio_echo);
     if (us->trig == NULL || us->echo == NULL)
     {
         log_error("Could not initialize ultrasonic sensor");
         return NULL;
     }
-    log_info("Ultrasound sensor has been correctly instantiated");
+    log_info("Ultrasound sensor has been correctly initialized");
     return us;
 }
 
-double get_distance(ultrasound_sensor *us)
+double us_get_distance(sensor_ultrasound *us)
 {
     struct timespec start_spec, end_spec;
 
-    //Send pulse
-    gpio_line_write(us->trig, HIGH); 
+    /* Send pulse */
+    gpio_line_write(us->trig, GPIO_HIGH);
     usleep(10000);
-    gpio_line_write(us->trig, LOW);
+    gpio_line_write(us->trig, GPIO_LOW);
 
-    //Recieve pulse
-    while(gpio_line_read(us->echo) == LOW) {}
+    /* Recieve pulse */
+    while(gpio_line_read(us->echo) == GPIO_LOW) {}
     clock_gettime(_POSIX_MONOTONIC_CLOCK, &start_spec);
-    while(gpio_line_read(us->echo) == HIGH) {}
+    while(gpio_line_read(us->echo) == GPIO_HIGH) {}
     clock_gettime(_POSIX_MONOTONIC_CLOCK, &end_spec);
 
-    //Calculate the length of the pulse in seconds
+    /* Calculate the length of the pulse in seconds */
     long double rtt = ((end_spec.tv_nsec - start_spec.tv_nsec)/NANO_SEC_TO_SEC);
-    double distance = rtt * SPEED_OF_SOUND_CMs_HALF; //(1/2)speed of sound in cm/s.
+    double distance = rtt * SPEED_OF_SOUND_CM_HALF;
     return distance;
 }
 
-void us_cleanup(ultrasound_sensor *us) 
+void us_cleanup(sensor_ultrasound *us)
 {
     gpio_line_close(us->echo);
     gpio_line_close(us->trig);
@@ -46,14 +46,15 @@ void us_cleanup(ultrasound_sensor *us)
 
 void us_test(int gpio_trig, int gpio_echo, int num_pings)
 {
-    ultrasound_sensor *us = us_init(gpio_trig, gpio_echo);
+    sensor_ultrasound *us = (sensor_ultrasound *)us_init(gpio_trig, gpio_echo);
     if (us == NULL)
     {
 	log_error("us_test failed as ultrasound sensor initialization failed");
 	return;
     }
-    for (int i = 0; i < num_pings; i++) {
-        double dist = get_distance(us);
+    for (int i = 0; i < num_pings; i++)
+    {
+        double dist = us_get_distance(us);
         printf("Ping %d has distance of %f cm(s)\n", i, dist);
 	    usleep(500000);
     }

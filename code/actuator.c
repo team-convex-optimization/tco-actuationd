@@ -44,30 +44,30 @@ static uint16_t const ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
  */
 static int motor_init(void *actr_handle, uint8_t const cal_gpio)
 {
-    struct gpiod_line *line = gpio_line_init(OUT, MOTOR_GPIO_CALIB);
-    gpio_line_write(line, HIGH);
+    struct gpiod_line *line = gpio_line_init(GPIO_OUT, MOTOR_GPIO_CALIB);
+    gpio_line_write(line, GPIO_HIGH);
     sleep(3);
-    gpio_line_write(line, LOW);
+    gpio_line_write(line, GPIO_LOW);
 
     /* Set throttle to neutral position, then press button. Wait 1 second. */
     actr_ch_control(actr_handle, MOTOR_CH, 0.5);
-    gpio_line_write(line, HIGH);
+    gpio_line_write(line, GPIO_HIGH);
     usleep(500000);
-    gpio_line_write(line, LOW);
+    gpio_line_write(line, GPIO_LOW);
     sleep(1);
 
     /* Set throttle to max, press button. Wait 1 second. */
     actr_ch_control(actr_handle, MOTOR_CH, 1);
-    gpio_line_write(line, HIGH);
+    gpio_line_write(line, GPIO_HIGH);
     usleep(500000);
-    gpio_line_write(line, LOW);
+    gpio_line_write(line, GPIO_LOW);
     sleep(1);
 
     /* Set throttle to min, press button. Wait 1 second. */
     actr_ch_control(actr_handle, MOTOR_CH, 0);
-    gpio_line_write(line, HIGH);
+    gpio_line_write(line, GPIO_HIGH);
     usleep(500000);
-    gpio_line_write(line, LOW);
+    gpio_line_write(line, GPIO_LOW);
     sleep(1);
 
     /* Handshake and calibration is now complete! */
@@ -116,7 +116,7 @@ int actr_ch_control(void *actr_handle,
 
     if (ch == MOTOR_CH && motor_init_done == 0)
     {
-        /* Not critical, can still set the duty cycle but likely without any effect. */
+        /* Not critical, can still set the duty cycle but likely with out any effect. */
         log_error("Motor needs to be initialized to control it");
     }
     if (pca9685_reg_ch_set(actr_handle, ch, duty_cycle) != ERR_OK)

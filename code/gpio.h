@@ -7,14 +7,14 @@
 
 enum gpio_dir
 {
-    IN = 0,
-    OUT,
+    GPIO_IN = 0,
+    GPIO_OUT,
 };
 
 enum gpio_value
 {
-    LOW = 0,
-    HIGH,
+    GPIO_LOW = 0,
+    GPIO_HIGH,
 };
 
 /**
