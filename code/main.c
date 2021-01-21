@@ -12,6 +12,7 @@
 #include "actuator.h"
 #include "pca9685.h"
 #include "calibration.h"
+#include "ultrasound.h"
 
 #include "tco_shmem.h"
 #include "tco_libd.h"
@@ -23,6 +24,8 @@ int main(int argc, const char *argv[])
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))
     {
         cal_usage();
+        printf("\n=================\n\n");
+        us_usage();
         return EXIT_SUCCESS;
     }
 
@@ -50,6 +53,14 @@ int main(int argc, const char *argv[])
     if (argc == 2 && (strcmp(argv[1], "--calibrate") == 0 || strcmp(argv[1], "-c") == 0))
     {
         cal_main(actr_handle);
+        return EXIT_SUCCESS;
+    }
+
+    if ((strcmp(argv[1], "--ultra") == 0 || strcmp(argv[1], "-u") == 0))
+    {
+        if (argc != 5)
+            printf("Incorrect usage. Use '-h' for more info.\n");
+        us_test(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
         return EXIT_SUCCESS;
     }
 
