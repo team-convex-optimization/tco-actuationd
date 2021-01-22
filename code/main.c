@@ -35,7 +35,7 @@ int main(int argc, const char *argv[])
         return EXIT_FAILURE;
     }
 
-    if ((strcmp(argv[1], "--ultra") == 0 || strcmp(argv[1], "-u") == 0))
+    if (argc > 1 && ((strcmp(argv[1], "--ultra") == 0 || strcmp(argv[1], "-u") == 0)))
     {
         if (argc != 5) 
         {
