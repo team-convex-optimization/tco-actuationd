@@ -10,6 +10,7 @@
 #define PWM_FREQ 50         /* Hz */
 #define MOTOR_CH 14         /* Motor must always be plugged into this channel. */
 #define MOTOR_GPIO_CALIB 24 /* GPIO pin to use for motor calibration. */
+#define MOTOR_GPIO_POWER 23 /* GPIO pin to control the ESC power */
 
 #define PULSE_LEN_MIN_DEFUALT 100
 #define PULSE_LEN_MAX_DEFUALT 200
@@ -18,8 +19,8 @@ static uint8_t motor_init_done = 0; /* 0 if needs initialization and >0 if initi
 
 /* XXX: Pulse length min and max are handled internally here and nowhere else! */
 static uint16_t const ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
-    {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
-    {100, 420},
+    {210, 440},
+    {195, 445},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
@@ -44,30 +45,32 @@ static uint16_t const ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
  */
 static int motor_init(void *actr_handle, uint8_t const cal_gpio)
 {
-    struct gpiod_line *line = gpio_line_init(GPIO_OUT, MOTOR_GPIO_CALIB);
-    gpio_line_write(line, GPIO_HIGH);
+    struct gpiod_line *power = gpio_line_init(GPIO_OUT, MOTOR_GPIO_POWER);
+    struct gpiod_line *setting = gpio_line_init(GPIO_OUT, MOTOR_GPIO_CALIB);
+    gpio_line_write(setting, GPIO_HIGH);
+    gpio_line_write(power, GPIO_HIGH); /* Turn on the ESC with the setting pressed */
     sleep(3);
-    gpio_line_write(line, GPIO_LOW);
+    gpio_line_write(setting, GPIO_LOW);
 
     /* Set throttle to neutral position, then press button. Wait 1 second. */
     actr_ch_control(actr_handle, MOTOR_CH, 0.5);
-    gpio_line_write(line, GPIO_HIGH);
+    gpio_line_write(setting, GPIO_HIGH);
     usleep(500000);
-    gpio_line_write(line, GPIO_LOW);
+    gpio_line_write(setting, GPIO_LOW);
     sleep(1);
 
     /* Set throttle to max, press button. Wait 1 second. */
     actr_ch_control(actr_handle, MOTOR_CH, 1);
-    gpio_line_write(line, GPIO_HIGH);
+    gpio_line_write(setting, GPIO_HIGH);
     usleep(500000);
-    gpio_line_write(line, GPIO_LOW);
+    gpio_line_write(setting, GPIO_LOW);
     sleep(1);
 
     /* Set throttle to min, press button. Wait 1 second. */
     actr_ch_control(actr_handle, MOTOR_CH, 0);
-    gpio_line_write(line, GPIO_HIGH);
+    gpio_line_write(setting, GPIO_HIGH);
     usleep(500000);
-    gpio_line_write(line, GPIO_LOW);
+    gpio_line_write(setting, GPIO_LOW);
     sleep(1);
 
     /* Handshake and calibration is now complete! */
