@@ -19,7 +19,7 @@ static uint8_t motor_init_done = 0; /* 0 if needs initialization and >0 if initi
 
 /* XXX: Pulse length min and max are handled internally here and nowhere else! */
 static uint16_t const ch_pulse_length[PCA9685_REG_CH_NUM][2] = {
-    {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
+    {210, 440},
     {100, 420},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
