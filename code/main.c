@@ -17,6 +17,11 @@
 #include "tco_shmem.h"
 #include "tco_libd.h"
 
+#define ULTRASOUND_TRIGGER 27
+#define ULTRASOUND_ECHO 22
+#define MIN_DRIVE_CLEARANCE 50 /* Minimum clearance the US sensor must read to continue motor power */
+#define MOTOR_CHANNEL 0 /* The channel the motor is on in the pca9685 board */
+
 int log_level = LOG_INFO | LOG_DEBUG | LOG_ERROR;
 
 int main(int argc, const char *argv[])
@@ -67,9 +72,20 @@ int main(int argc, const char *argv[])
         return EXIT_SUCCESS;
     }
 
+    /* Initialize the ultrasound */
+    sensor_ultrasound *us = us_init(ULTRASOUND_TRIGGER, ULTRASOUND_ECHO);
+
     struct tco_shmem_data_control ctrl_cpy = {0};
     while (1)
     {
+         /* Check US_distance to ensure it is safe */
+        double clearance = us_get_distance(us);
+        if (clearance < MIN_DRIVE_CLEARANCE)
+        {
+            actr_ch_control(actr_handle, MOTOR_CHANNEL, 0.5f);
+            goto end_loop;
+        }
+
         if (sem_wait(control_data_sem) == -1)
         {
             log_error("sem_wait: %s", strerror(errno));
@@ -101,6 +117,7 @@ int main(int argc, const char *argv[])
                 }
             }
         }
+        end_loop:
         usleep(10000); /* Update actuator state every ~0.01 seconds (a little more than that actually). */
     }
 
