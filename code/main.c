@@ -17,10 +17,14 @@
 #include "tco_shmem.h"
 #include "tco_libd.h"
 
+/* comment the below 2 defines to exclude us emergency stop from compilation */
 #define ULTRASOUND_TRIGGER 27
 #define ULTRASOUND_ECHO 22
-#define MIN_DRIVE_CLEARANCE 50 /* Minimum clearance the US sensor must read to continue motor power */
-#define MOTOR_CHANNEL 0 /* The channel the motor is on in the pca9685 board */
+
+#ifdef ULTRASOUND_TRIGGER && ULTRASOUND_ECHO
+    #define MIN_DRIVE_CLEARANCE 50.0 /* Minimum clearance the US sensor must read to continue motor power */
+    #define MOTOR_CHANNEL 0 /* The channel the motor is on in the pca9685 board */
+#endif
 
 int log_level = LOG_INFO | LOG_DEBUG | LOG_ERROR;
 
@@ -73,18 +77,23 @@ int main(int argc, const char *argv[])
     }
 
     /* Initialize the ultrasound */
-    sensor_ultrasound *us = us_init(ULTRASOUND_TRIGGER, ULTRASOUND_ECHO);
+    #ifdef ULTRASOUND_TRIGGER && ULTRASOUND_ECHO
+        sensor_ultrasound *us = us_init(ULTRASOUND_TRIGGER, ULTRASOUND_ECHO);
+    #endif
 
     struct tco_shmem_data_control ctrl_cpy = {0};
     while (1)
     {
-         /* Check US_distance to ensure it is safe */
-        double clearance = us_get_distance(us);
-        if (clearance < MIN_DRIVE_CLEARANCE)
-        {
-            actr_ch_control(actr_handle, MOTOR_CHANNEL, 0.5f);
-            goto end_loop;
-        }
+        #ifdef ULTRASOUND_TRIGGER && ULTRASOUND_ECHO
+            /* Check US_distance to ensure it is safe */
+            double clearance = us_get_distance(us);
+            if (clearance < MIN_DRIVE_CLEARANCE)
+            {
+                actr_ch_control(actr_handle, MOTOR_CHANNEL, 0.5f);
+                log_info("Stopping motors as condition `clearance < us_get_distance(us)` is not met");
+                goto end_loop;
+            }
+        #endif
 
         if (sem_wait(control_data_sem) == -1)
         {
