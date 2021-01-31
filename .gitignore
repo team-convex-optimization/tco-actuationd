@@ -1,2 +1,8 @@
-*build/*
+# Compiler output
+build/*
+
+# VSCode
 .vscode/*
+
+# Logger output
+log.txt
