@@ -28,6 +28,6 @@ clang \
     ../code/gpio.c \
     ../code/ultrasound.c \
     tco_libd.a \
-    -o tco-actuationd.bin \
+    -o tco_actuationd.bin \
     -O 
 popd

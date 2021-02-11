@@ -1,8 +1,8 @@
 # Actuation Daemon
 
 ## Dependencies
-- Clang
-- LLVM
+- clang
+- llvm
 - libi2c-dev
 - libncurses5-dev
 - libgpiod-dev 
