@@ -17,16 +17,6 @@
 #include "tco_shmem.h"
 #include "tco_libd.h"
 
-/* comment the below define to exclude emergency stop features from compilation */
-#define EMERGENCY_FEATURES 1
-
-#ifdef EMERGENCY_FEATURES
-    #define ULTRASOUND_TRIGGER 27
-    #define ULTRASOUND_ECHO 22
-    #define MIN_DRIVE_CLEARANCE 50.0 /* Minimum clearance the US sensor must read to continue motor power */
-    #define MOTOR_CHANNEL 0 /* The channel the motor is on in the pca9685 board */
-#endif
-
 int log_level = LOG_INFO | LOG_DEBUG | LOG_ERROR;
 
 int main(int argc, const char *argv[])
@@ -47,7 +37,7 @@ int main(int argc, const char *argv[])
 
     if (argc > 1 && ((strcmp(argv[1], "--ultra") == 0 || strcmp(argv[1], "-u") == 0)))
     {
-        if (argc != 5) 
+        if (argc != 5)
         {
             printf("Incorrect usage. Use '-h' for more info.\n");
             return EXIT_FAILURE;
@@ -64,37 +54,31 @@ int main(int argc, const char *argv[])
         return EXIT_FAILURE;
     }
 
-    void *actr_handle = actr_init();
-    if (actr_handle == NULL)
+    if (argc == 2 && (strcmp(argv[1], "--calibrate") == 0 || strcmp(argv[1], "-c") == 0))
+    {
+        cal_main();
+        return EXIT_SUCCESS;
+    }
+
+    if (actr_init() != 0)
     {
         log_error("Failed to initialize IO hardware");
         return EXIT_FAILURE;
     }
 
-    if (argc == 2 && (strcmp(argv[1], "--calibrate") == 0 || strcmp(argv[1], "-c") == 0))
-    {
-        cal_main(actr_handle);
-        return EXIT_SUCCESS;
-    }
-
-    /* Initialize the ultrasound */
-    #ifdef EMERGENCY_FEATURES
-        sensor_ultrasound *us = us_init(ULTRASOUND_TRIGGER, ULTRASOUND_ECHO);
-    #endif
+    // sensor_ultrasound *us = us_init(ULTRASOUND_TRIGGER, ULTRASOUND_ECHO);
 
     struct tco_shmem_data_control ctrl_cpy = {0};
     while (1)
     {
-        #ifdef EMERGENCY_FEATURES
-            /* Check US_distance to ensure it is safe */
-            double clearance = us_get_distance(us);
-            if (clearance < MIN_DRIVE_CLEARANCE)
-            {
-                actr_ch_control(actr_handle, MOTOR_CHANNEL, 0.5f);
-                log_info("Stopping motors as condition `clearance < us_get_distance(us)` is not met");
-                goto end_loop;
-            }
-        #endif
+        // /* Check US_distance to ensure it is safe */
+        // double clearance = us_get_distance(us);
+        // if (clearance < MIN_DRIVE_CLEARANCE)
+        // {
+        //     actr_ch_control(actr_handle, MOTOR_CHANNEL, 0.5f);
+        //     log_info("Stopping motors as condition `clearance < us_get_distance(us)` is not met");
+        //     goto end_loop;
+        // }
 
         if (sem_wait(control_data_sem) == -1)
         {
@@ -118,16 +102,15 @@ int main(int argc, const char *argv[])
             {
                 if (ctrl_cpy.ch[ch_i].active > 0)
                 {
-                    actr_ch_control(actr_handle, ch_i, ctrl_cpy.ch[ch_i].pulse_frac);
+                    actr_ch_set(ch_i, ctrl_cpy.ch[ch_i].pulse_frac);
                 }
                 else
                 {
                     /* TODO: Check if some devices need a signal other than 0.5 as a neutral position. */
-                    actr_ch_control(actr_handle, ch_i, 0.5f);
+                    actr_ch_set(ch_i, 0.5f);
                 }
             }
         }
-        end_loop:
         usleep(10000); /* Update actuator state every ~0.01 seconds (a little more than that actually). */
     }
 

@@ -6,6 +6,7 @@
 
 #include "calibration.h"
 #include "pca9685.h"
+#include "actuator.h"
 
 #define CH_NUM 16U
 #define CH_WIN_WIDTH 13
@@ -140,8 +141,14 @@ static void draw_status(WINDOW *win_status)
     wrefresh(win_status);
 }
 
-void cal_main(void *pca9685_handle)
+void cal_main()
 {
+    const int i2c_port_fd = i2c_port_open(PCA9685_I2C_ADAPTER_ID);
+    if (i2c_port_fd == -1)
+    {
+        log_error("Failed to open I2C adapter connected to PCA9685");
+        exit(EXIT_FAILURE);
+    }
 
     /* Init ncurses */
     initscr();
@@ -204,7 +211,7 @@ void cal_main(void *pca9685_handle)
                 }
                 break;
             }
-            if (pca9685_reg_ch_set(pca9685_handle, ch_selected, *val_edit) != ERR_OK)
+            if (pca9685_ch_raw_set(i2c_port_fd, ch_selected, *val_edit) != ERR_OK)
             {
                 exit(EXIT_FAILURE);
             }
