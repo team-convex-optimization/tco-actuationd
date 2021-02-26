@@ -149,6 +149,11 @@ void cal_main()
         log_error("Failed to open I2C adapter connected to PCA9685");
         exit(EXIT_FAILURE);
     }
+    if (pca9685_init(i2c_port_fd) != ERR_OK)
+    {
+        log_error("Failed to initialize PCA9685");
+        exit(EXIT_FAILURE);
+    }
 
     /* Init ncurses */
     initscr();
