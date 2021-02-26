@@ -11,7 +11,7 @@
 /* XXX: Pulse length min and max are handled internally here and nowhere else! */
 uint16_t static const CH_PULSE_LENGTH[PCA9685_REG_CH_NUM][2] = {
     {210, 440},
-    {195, 445},
+    {205, 416},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT},
