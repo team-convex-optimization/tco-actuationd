@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <semaphore.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "actuator.h"
 #include "pca9685.h"
@@ -18,8 +19,19 @@
 
 int log_level = LOG_INFO | LOG_DEBUG | LOG_ERROR;
 
+/* Handle ctrl-c */
+void handle_sigint(int sig)
+{
+    if (actr_deinit() == 0)
+    {
+        exit(EXIT_FAILURE);
+    }
+    exit(EXIT_SUCCESS);
+}
+
 int main(int argc, const char *argv[])
 {
+    signal(SIGINT, handle_sigint);
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))
     {
         cal_usage();

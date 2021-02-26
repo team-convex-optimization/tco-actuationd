@@ -80,6 +80,13 @@ typedef enum pca9685_reg_mode2_t
 i2c_error_t pca9685_init(int const i2c_port_fd);
 
 /**
+ * @brief Resets the chip and put it into sleep mode.
+ * @param i2c_port_fd FD for the opened I2C adapter connected to PCA9685.
+ * @return Status code.
+ */
+i2c_error_t pca9685_reset(int const i2c_port_fd);
+
+/**
  * @brief A simple interface function to set the duty cycle for a specified channel by specifying a pulse fraction.
  * @param i2c_port_fd FD for the opened I2C adapter connected to PCA9685.
  * @param num_ch Number of the channel to modify.

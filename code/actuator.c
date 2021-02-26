@@ -85,6 +85,16 @@ int actr_init()
     return 0;
 }
 
+int actr_deinit(void)
+{
+    if (pca9685_reset(i2c_port_fd) != ERR_OK)
+    {
+        log_error("Failed to deinitialize the PCA9685 board");
+        return -1;
+    }
+    return 0;
+}
+
 int actr_ch_set(uint8_t const channel, float const pulse_frac)
 {
     if (channel == MOTOR_CH && motor_init_done == 0)

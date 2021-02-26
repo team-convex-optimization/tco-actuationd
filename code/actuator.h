@@ -13,6 +13,12 @@
 int actr_init(void);
 
 /**
+ * @brief Deinit actuator devices.
+ * @return 0 on success and -1 on failure.
+ */
+int actr_deinit(void);
+
+/**
  * @brief Control one of the channels on the PCA9685 board. "actr_init" must be called before using
  * this function.
  * @param channel Channel to control.

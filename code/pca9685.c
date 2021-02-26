@@ -30,14 +30,11 @@ uint16_t static const CH_PULSE_LENGTH[PCA9685_REG_CH_NUM][2] = {
 
 i2c_error_t pca9685_init(int const i2c_port_fd)
 {
-    /* 0x06 is special and the exact value expected by the chip after receiving a reset address. */
-    if (i2c_cmd_write(i2c_port_fd, PCA9685_RESET_ADDR, 0x06U, 0, 0) != 0)
+    if (pca9685_reset(i2c_port_fd) != ERR_OK)
     {
-        log_error("Failed to send SWRST data byte");
-        return ERR_I2C_WRITE;
+        log_error("Failed to reset the PCA9685 chip");
+        return ERR_CRIT;
     }
-    usleep(10); /* Reset time is 4.2 microseconds. */
-
     /* Chip should be in sleep mode here so it's safe to set the prescale value. */
     if (i2c_cmd_write(i2c_port_fd, PCA9685_ADDR, PCA9685_REG_PRESCALE, PRESCALE_VAL, 1) != ERR_OK)
     {
@@ -59,6 +56,19 @@ i2c_error_t pca9685_init(int const i2c_port_fd)
         return ERR_I2C_WRITE;
     }
 
+    return ERR_OK;
+}
+
+i2c_error_t pca9685_reset(int const i2c_port_fd)
+{
+    /* 0x06 is special and the exact value expected by the chip after receiving a reset address. */
+    if (i2c_cmd_write(i2c_port_fd, PCA9685_RESET_ADDR, 0x06U, 0, 0) != 0)
+    {
+        log_error("Failed to send SWRST data byte");
+        return ERR_I2C_WRITE;
+    }
+    usleep(10); /* Reset time is 4.2 microseconds. */
+    /* Chip should be in sleep more right now. */
     return ERR_OK;
 }
 
