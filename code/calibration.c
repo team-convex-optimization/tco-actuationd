@@ -143,13 +143,13 @@ static void draw_status(WINDOW *win_status)
 
 void cal_main()
 {
-    const int i2c_port_fd = i2c_port_open(PCA9685_I2C_ADAPTER_ID);
-    if (i2c_port_fd == -1)
+    pca9685_handle_t handle = {0};
+    if (i2c_port_open(PCA9685_I2C_ADAPTER_ID, &handle.fd) != ERR_OK)
     {
         log_error("Failed to open I2C adapter connected to PCA9685");
         exit(EXIT_FAILURE);
     }
-    if (pca9685_init(i2c_port_fd) != ERR_OK)
+    if (pca9685_init(&handle) != ERR_OK)
     {
         log_error("Failed to initialize PCA9685");
         exit(EXIT_FAILURE);
@@ -216,7 +216,7 @@ void cal_main()
                 }
                 break;
             }
-            if (pca9685_ch_raw_set(i2c_port_fd, ch_selected, *val_edit) != ERR_OK)
+            if (pca9685_ch_raw_set(&handle, ch_selected, *val_edit) != ERR_OK)
             {
                 exit(EXIT_FAILURE);
             }

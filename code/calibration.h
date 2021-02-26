@@ -5,7 +5,7 @@
  * @brief Main function for calibration mode. Once called, runs an interactive TUI to help in
  * calibrating pulse lengths for each channel. 
  */
-void cal_main();
+void cal_main(void);
 
 /**
  * @brief Print out a usage message for the calibration mode.

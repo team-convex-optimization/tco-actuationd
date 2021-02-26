@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-/* TODO: This may need to be moved to be in a more obvious place. */
 #define PCA9685_I2C_ADAPTER_ID 2
 
 /**
