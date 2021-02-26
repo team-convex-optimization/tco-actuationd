@@ -62,7 +62,7 @@ static int motor_init()
 
 int actr_init()
 {
-    if (i2c_port_open(PCA9685_I2C_ADAPTER_ID, &pca9685_handle.fd) != ERR_OK)
+    if (i2c_port_open(PCA9685_I2C_ADAPTER_ID, &(pca9685_handle.fd)) != ERR_OK)
     {
         log_error("Failed to open I2C adapter with ID %u", PCA9685_I2C_ADAPTER_ID);
         return -1;

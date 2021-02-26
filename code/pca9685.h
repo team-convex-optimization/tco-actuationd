@@ -7,9 +7,6 @@
 #define PCA9685_ADDR 0x40
 #define PCA9685_RESET_ADDR 0x0
 #define PCA9685_REG_CH_NUM 16U
-#define PCA9685_REG_PRESCALE_MIN 3
-#define PCA9685_REG_PRESCALE_MAX 255
-#define PCA9685_OSC_FREQ 25000000 /* 25 MHz. */
 
 /* PCA9685 hardware definition. */
 typedef enum pca9685_reg_off_t
@@ -86,7 +83,7 @@ error_t pca9685_reset(pca9685_handle_t *const handle);
  * @param pulse_frac Pulse fraction of the desired signal. 0:0%, 1:100.
  * @return 0 on success, -1 on failure.
  */
-int pca9685_ch_frac_set(pca9685_handle_t *const handle, uint8_t const num_ch, float const pulse_frac);
+error_t pca9685_ch_frac_set(pca9685_handle_t *const handle, uint8_t const num_ch, float const pulse_frac);
 
 /**
  * @brief A simple interface function to set the duty cycle for a specified channel.
@@ -95,6 +92,6 @@ int pca9685_ch_frac_set(pca9685_handle_t *const handle, uint8_t const num_ch, fl
  * @param duty_cycle Duty cycle of the desired signal. 0:0%, >=(2^12)-1:100%.
  * @return 0 on success, -1 on failure.
  */
-int pca9685_ch_raw_set(pca9685_handle_t *const handle, uint8_t const channel, uint16_t const duty_cycle);
+error_t pca9685_ch_raw_set(pca9685_handle_t *const handle, uint8_t const channel, uint16_t const duty_cycle);
 
 #endif /* _PCA9685_H_ */

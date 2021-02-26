@@ -144,7 +144,7 @@ static void draw_status(WINDOW *win_status)
 void cal_main()
 {
     pca9685_handle_t handle = {0};
-    if (i2c_port_open(PCA9685_I2C_ADAPTER_ID, &handle.fd) != ERR_OK)
+    if (i2c_port_open(PCA9685_I2C_ADAPTER_ID, &(handle.fd)) != ERR_OK)
     {
         log_error("Failed to open I2C adapter connected to PCA9685");
         exit(EXIT_FAILURE);
