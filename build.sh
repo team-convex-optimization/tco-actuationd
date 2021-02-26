@@ -16,10 +16,11 @@ clang \
     -I /usr/include \
     -I ../lib/tco_shmem \
     -I ../lib/tco_libd/include \
-    -lpthread \
-    -lrt \
+    -l pthread \
+    -l rt \
     -l i2c \
-    -lncurses \
+    -l ncurses \
+    -l gpiod \
     ../code/*.c \
     tco_libd.a \
     -o tco_actuationd.bin \
