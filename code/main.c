@@ -12,7 +12,6 @@
 #include "actuator.h"
 #include "pca9685.h"
 #include "calibration.h"
-#include "ultrasound.h"
 
 #include "tco_shmem.h"
 #include "tco_libd.h"
@@ -25,7 +24,6 @@ int main(int argc, const char *argv[])
     {
         cal_usage();
         printf("\n=================\n\n");
-        us_usage();
         return EXIT_SUCCESS;
     }
 
@@ -33,17 +31,6 @@ int main(int argc, const char *argv[])
     {
         printf("Failed to initialize the logger\n");
         return EXIT_FAILURE;
-    }
-
-    if (argc > 1 && ((strcmp(argv[1], "--ultra") == 0 || strcmp(argv[1], "-u") == 0)))
-    {
-        if (argc != 5)
-        {
-            printf("Incorrect usage. Use '-h' for more info.\n");
-            return EXIT_FAILURE;
-        }
-        us_test(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
-        return EXIT_SUCCESS;
     }
 
     struct tco_shmem_data_control *control_data;
@@ -66,20 +53,9 @@ int main(int argc, const char *argv[])
         return EXIT_FAILURE;
     }
 
-    // sensor_ultrasound *us = us_init(ULTRASOUND_TRIGGER, ULTRASOUND_ECHO);
-
     struct tco_shmem_data_control ctrl_cpy = {0};
     while (1)
     {
-        // /* Check US_distance to ensure it is safe */
-        // double clearance = us_get_distance(us);
-        // if (clearance < MIN_DRIVE_CLEARANCE)
-        // {
-        //     actr_ch_control(actr_handle, MOTOR_CHANNEL, 0.5f);
-        //     log_info("Stopping motors as condition `clearance < us_get_distance(us)` is not met");
-        //     goto end_loop;
-        // }
-
         if (sem_wait(control_data_sem) == -1)
         {
             log_error("sem_wait: %s", strerror(errno));

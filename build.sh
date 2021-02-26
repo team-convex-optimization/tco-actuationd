@@ -19,14 +19,8 @@ clang \
     -lpthread \
     -lrt \
     -l i2c \
-    -lgpiod \
     -lncurses \
-    ../code/pca9685.c \
-    ../code/main.c \
-    ../code/actuator.c \
-    ../code/calibration.c \
-    ../code/gpio.c \
-    ../code/ultrasound.c \
+    ../code/*.c \
     tco_libd.a \
     -o tco_actuationd.bin \
     -O 
