@@ -20,43 +20,44 @@ static const uint8_t MOTOR_GPIO_POWER = 23; /* For turning ESC on and off */
  */
 static int motor_init()
 {
-    gpio_handle_t power = gpio_line_init(1, GPIO_OUT, MOTOR_GPIO_POWER);
-    gpio_handle_t setting = gpio_line_init(1, GPIO_OUT, MOTOR_GPIO_CALIB);
-    gpio_line_write(setting.line, GPIO_HIGH);
-    gpio_line_write(power.line, GPIO_HIGH); /* Turn on the ESC with the setting pressed */
-    sleep(3);
-    gpio_line_write(setting.line, GPIO_LOW);
+    // TODO: This needs to be either removed or fixed. ESC seems to work well without prior calibration.
+    // gpio_handle_t power = gpio_line_init(1, GPIO_OUT, MOTOR_GPIO_POWER);
+    // gpio_handle_t setting = gpio_line_init(1, GPIO_OUT, MOTOR_GPIO_CALIB);
+    // gpio_line_write(setting.line, GPIO_HIGH);
+    // gpio_line_write(power.line, GPIO_HIGH); /* Turn on the ESC with the setting pressed */
+    // sleep(3);
+    // gpio_line_write(setting.line, GPIO_LOW);
 
-    /* Set throttle to neutral position, then press button. Wait 1 second. */
-    actr_ch_set(MOTOR_CH, 0.5);
-    gpio_line_write(setting.line, GPIO_HIGH);
-    usleep(500000);
-    gpio_line_write(setting.line, GPIO_LOW);
-    sleep(1);
+    // /* Set throttle to neutral position, then press button. Wait 1 second. */
+    // actr_ch_set(MOTOR_CH, 0.5);
+    // gpio_line_write(setting.line, GPIO_HIGH);
+    // usleep(500000);
+    // gpio_line_write(setting.line, GPIO_LOW);
+    // sleep(1);
 
-    /* Set throttle to max, press button. Wait 1 second. */
-    actr_ch_set(MOTOR_CH, 1);
-    gpio_line_write(setting.line, GPIO_HIGH);
-    usleep(500000);
-    gpio_line_write(setting.line, GPIO_LOW);
-    sleep(1);
+    // /* Set throttle to max, press button. Wait 1 second. */
+    // actr_ch_set(MOTOR_CH, 1);
+    // gpio_line_write(setting.line, GPIO_HIGH);
+    // usleep(500000);
+    // gpio_line_write(setting.line, GPIO_LOW);
+    // sleep(1);
 
-    /* Set throttle to min, press button. Wait 1 second. */
-    actr_ch_set(MOTOR_CH, 0);
-    gpio_line_write(setting.line, GPIO_HIGH);
-    usleep(500000);
-    gpio_line_write(setting.line, GPIO_LOW);
-    sleep(1);
+    // /* Set throttle to min, press button. Wait 1 second. */
+    // actr_ch_set(MOTOR_CH, 0);
+    // gpio_line_write(setting.line, GPIO_HIGH);
+    // usleep(500000);
+    // gpio_line_write(setting.line, GPIO_LOW);
+    // sleep(1);
 
-    /* Deinit GPIO pins used in calibration */
-    gpio_line_close(power.line);
-    gpio_chip_close(power.chip);
-    gpio_line_close(setting.line);
-    gpio_chip_close(setting.chip);
+    // /* Deinit GPIO pins used in calibration */
+    // gpio_line_close(power.line);
+    // gpio_chip_close(power.chip);
+    // gpio_line_close(setting.line);
+    // gpio_chip_close(setting.chip);
 
-    /* Handshake and calibration is now complete! */
-    log_info("Motor has been calibrated\n");
-    motor_init_done = 1;
+    // /* Handshake and calibration is now complete! */
+    // log_info("Motor has been calibrated\n");
+    // motor_init_done = 1;
     return 0;
 }
 
