@@ -12,7 +12,6 @@ clang \
     -Wall \
     -std=c11 \
     -D _DEFAULT_SOURCE \
-    -I ..\
     -I /usr/include \
     -I ../lib/tco_shmem \
     -I ../lib/tco_libd/include \
