@@ -83,20 +83,17 @@ int main(int argc, const char *argv[])
         }
 
         /* Update actuators */
-        if (ctrl_cpy.valid > 0)
+        uint8_t ctrl_ch_count = sizeof(ctrl_cpy.ch) / sizeof(ctrl_cpy.ch[0]);
+        for (uint8_t ch_i = 0; ch_i < ctrl_ch_count; ch_i++)
         {
-            uint8_t ctrl_ch_count = sizeof(ctrl_cpy.ch) / sizeof(ctrl_cpy.ch[0]);
-            for (uint8_t ch_i = 0; ch_i < ctrl_ch_count; ch_i++)
+            if (ctrl_cpy.ch[ch_i].active > 0)
             {
-                if (ctrl_cpy.ch[ch_i].active > 0)
-                {
-                    actr_ch_set(ch_i, ctrl_cpy.ch[ch_i].pulse_frac);
-                }
-                else
-                {
-                    /* TODO: Check if some devices need a signal other than 0.5 as a neutral position. */
-                    actr_ch_set(ch_i, 0.5f);
-                }
+                actr_ch_set(ch_i, ctrl_cpy.ch[ch_i].pulse_frac);
+            }
+            else
+            {
+                /* TODO: Check if some devices need a signal other than 0.5 as a neutral position. */
+                actr_ch_set(ch_i, 0.5f);
             }
         }
         usleep(10000); /* Update actuator state every ~0.01 seconds (a little more than that actually). */
