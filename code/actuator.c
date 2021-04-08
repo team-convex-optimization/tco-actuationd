@@ -57,7 +57,7 @@ static int motor_init()
 
     // /* Handshake and calibration is now complete! */
     // log_info("Motor has been calibrated\n");
-    // motor_init_done = 1;
+    motor_init_done = 1;
     return 0;
 }
 
