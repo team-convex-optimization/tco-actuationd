@@ -86,7 +86,7 @@ int main(int argc, const char *argv[])
         uint8_t ctrl_ch_count = sizeof(ctrl_cpy.ch) / sizeof(ctrl_cpy.ch[0]);
         for (uint8_t ch_i = 0; ch_i < ctrl_ch_count; ch_i++)
         {
-            if (ctrl_cpy.ch[ch_i].active > 0)
+            if (ctrl_cpy.ch[ch_i].active > 0 && ctrl_cpy.emergency == 0)
             {
                 actr_ch_set(ch_i, ctrl_cpy.ch[ch_i].pulse_frac);
             }
