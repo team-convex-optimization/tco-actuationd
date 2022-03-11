@@ -28,7 +28,7 @@ HIGH registers, then always ON (if in HIGH ON register) or always OFF (if in HIG
 /* XXX: Pulse length min and max are handled internally here and nowhere else! */
 uint16_t static const CH_PULSE_LENGTH[PCA9685_REG_CH_NUM][3] = {
     {210, 440, 0},
-    {190, 410, 1},
+    {190, 450, 1},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT, PULSE_LEN_INVERT_DEFUALT},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT, PULSE_LEN_INVERT_DEFUALT},
     {PULSE_LEN_MIN_DEFUALT, PULSE_LEN_MAX_DEFUALT, PULSE_LEN_INVERT_DEFUALT},
